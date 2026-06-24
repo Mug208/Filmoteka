@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="Filmoteka.Server/Filmoteka.Server.csproj" />
+  </Folder>
+  <Folder Name="/frontend/">
+    <Project Path="filmoteka.client/filmoteka.client.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+  </Folder>
+</Solution>
