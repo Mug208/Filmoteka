@@ -14,12 +14,34 @@ namespace Filmoteka.Server.Services
             _context = context;
         }
 
-        public async Task<PaginacijaResultatDto<FilmDto>> DobiFilmoviPagedAsync(int stranica, int velicinaStranice)
+        public async Task<PaginacijaResultatDto<FilmDto>> DobiFilmoviPagedAsync(int stranica, int velicinaStranice, string? pretraga = null, Guid? zanrId = null, int? godina = null, bool? dostupnoUBioskopu = null)
         {
             var query = _context.Filmovi
                 .Include(trans => trans.Zanr)
                 .Include(form => form.Reziseri)
-                .OrderBy(ers => ers.Naziv);
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pretraga))
+            {
+                query = query.Where(f => f.Naziv.Contains(pretraga) || (f.Opis != null && f.Opis.Contains(pretraga)));
+            }
+
+            if (zanrId.HasValue)
+            {
+                query = query.Where(f => f.ZanrId == zanrId.Value);
+            }
+
+            if (godina.HasValue)
+            {
+                query = query.Where(f => f.Godina == godina.Value);
+            }
+
+            if (dostupnoUBioskopu.HasValue && dostupnoUBioskopu.Value)
+            {
+                query = query.Where(f => f.DostupnoUBioskopu);
+            }
+
+            query = query.OrderBy(ers => ers.Naziv);
 
             int totalItems = await query.CountAsync();
 
@@ -55,6 +77,7 @@ namespace Filmoteka.Server.Services
                 Naziv = dto.Naziv,
                 Godina = dto.Godina,
                 Opis = dto.Opis,
+                DostupnoUBioskopu = dto.DostupnoUBioskopu,
                 ZanrId = dto.ZanrId
             };
 
@@ -84,6 +107,7 @@ namespace Filmoteka.Server.Services
             film.Naziv = dto.Naziv;
             film.Godina = dto.Godina;
             film.Opis = dto.Opis;
+            film.DostupnoUBioskopu = dto.DostupnoUBioskopu;
             film.ZanrId = dto.ZanrId;
 
             if (dto.ReziseriIds == null || dto.ReziseriIds.Count == 0)
@@ -126,6 +150,7 @@ namespace Filmoteka.Server.Services
                 Naziv = film.Naziv,
                 Godina = film.Godina,
                 Opis = film.Opis,
+                DostupnoUBioskopu = film.DostupnoUBioskopu,
                 Zanr = film.Zanr == null ? null : new ZanrDto
                 {
                     Id = film.Zanr.Id,

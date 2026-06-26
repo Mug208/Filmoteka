@@ -23,6 +23,9 @@ namespace Filmoteka.Server.Models
         [Column("OpisFilma")]
         public string? Opis { get; set; }
 
+        [Column("DostupnoUBioskopu")]
+        public bool DostupnoUBioskopu { get; set; }
+
         [Required(ErrorMessage = "Zanr filma je obavezan.")]
         [Column("ZanrId")]
         public Guid ZanrId { get; set; }

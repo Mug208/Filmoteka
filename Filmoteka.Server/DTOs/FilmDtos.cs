@@ -8,6 +8,7 @@ namespace Filmoteka.Server.DTOs
         public string Naziv { get; set; } = string.Empty;
         public int Godina { get; set; }
         public string? Opis { get; set; }
+        public bool DostupnoUBioskopu { get; set; }
         public ZanrDto? Zanr { get; set; }
         public List<ReziserDto> Reziseri { get; set; } = new List<ReziserDto>();
     }
@@ -22,6 +23,7 @@ namespace Filmoteka.Server.DTOs
         public string? Opis { get; set; }
         [Required(ErrorMessage = "ZanrId je obavezno polje.")]
         public Guid ZanrId { get; set; }
+        public bool DostupnoUBioskopu { get; set; }
 
         public List<Guid> ReziseriIds { get; set; } = new();
     }

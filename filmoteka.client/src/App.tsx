@@ -1,58 +1,26 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Navbar from './componente/Navbar';
+import FilmList from './stranice/FilmList';
+import FilmDetails from './stranice/FilmDetalji';
+import FilmForm from './stranice/FilmForm';
+import ZanrList from './stranice/ZanrList';
+import ReziserList from './stranice/ReziserList';
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
-}
-
-function App() {
-    const [forecasts, setForecasts] = useState<Forecast[]>();
-
-    useEffect(() => {
-        populateWeatherData();
-    }, []);
-
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
-
+export default function App() {
     return (
-        <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
-        </div>
+        <BrowserRouter>
+            <Navbar />
+            <main style={{ maxWidth: '1100px', margin: '0 auto', padding: '1.5rem 1rem 3rem' }}>
+                <Routes>
+                    <Route path="/" element={<FilmList />} />
+                    <Route path="/filmovi/novi" element={<FilmForm />} />
+                    <Route path="/filmovi/:id" element={<FilmDetails />} />
+                    <Route path="/filmovi/:id/izmeni" element={<FilmForm />} />
+                    <Route path="/zanrovi" element={<ZanrList />} />
+                    <Route path="/reziseri" element={<ReziserList />} />
+                    <Route path="*" element={<h2>Stranica nije pronađena</h2>} />
+                </Routes>
+            </main>
+        </BrowserRouter>
     );
-
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        if (response.ok) {
-            const data = await response.json();
-            setForecasts(data);
-        }
-    }
 }
-
-export default App;
