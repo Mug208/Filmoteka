@@ -51,7 +51,6 @@ export default function FilmList() {
                 setZanrovi(res);
             })
             .catch(() => {
-                // ignore filter load failure
             });
         return () => {
             isMounted = false;

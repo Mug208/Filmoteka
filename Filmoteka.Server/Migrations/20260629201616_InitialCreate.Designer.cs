@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Filmoteka.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260626094603_AddDostupnoUBioskopuToFilmovi")]
-    partial class AddDostupnoUBioskopuToFilmovi
+    [Migration("20260629201616_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,74 @@ namespace Filmoteka.Server.Migrations
                     b.ToTable("Filmovi");
                 });
 
+            modelBuilder.Entity("Filmoteka.Server.Models.Projekcija", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DostupnaMesta")
+                        .HasColumnType("int")
+                        .HasColumnName("DostupnaMesta");
+
+                    b.Property<Guid>("FilmId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("FilmId");
+
+                    b.Property<Guid>("SalaId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("SalaId");
+
+                    b.Property<DateTime>("VremePocetka")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("VremePocetka");
+
+                    b.Property<DateTime>("VremeZavrsetka")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("VremeZavrsetka");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FilmId");
+
+                    b.HasIndex("SalaId");
+
+                    b.ToTable("Projekcije");
+                });
+
+            modelBuilder.Entity("Filmoteka.Server.Models.Rezervacija", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DatumRezervacije")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DatumRezervacije");
+
+                    b.Property<string>("KorisnikEmail")
+                        .IsRequired()
+                        .HasMaxLength(83)
+                        .HasColumnType("nvarchar(83)")
+                        .HasColumnName("KorisnikEmail");
+
+                    b.Property<string>("KorisnikIme")
+                        .IsRequired()
+                        .HasMaxLength(63)
+                        .HasColumnType("nvarchar(63)")
+                        .HasColumnName("KorisnikIme");
+
+                    b.Property<Guid>("ProjekcijaId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ProjekcijaId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjekcijaId");
+
+                    b.ToTable("Rezervacije");
+                });
+
             modelBuilder.Entity("Filmoteka.Server.Models.Reziser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -101,6 +169,34 @@ namespace Filmoteka.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Reziseri");
+                });
+
+            modelBuilder.Entity("Filmoteka.Server.Models.Sala", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Kapacitet")
+                        .HasColumnType("int")
+                        .HasColumnName("KapacitetSale");
+
+                    b.Property<string>("Naziv")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("NazivSale");
+
+                    b.Property<int>("Tip")
+                        .HasColumnType("int")
+                        .HasColumnName("TipSale");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Naziv")
+                        .IsUnique();
+
+                    b.ToTable("Sale");
                 });
 
             modelBuilder.Entity("Filmoteka.Server.Models.Zanr", b =>
@@ -144,6 +240,46 @@ namespace Filmoteka.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Zanr");
+                });
+
+            modelBuilder.Entity("Filmoteka.Server.Models.Projekcija", b =>
+                {
+                    b.HasOne("Filmoteka.Server.Models.Film", "Film")
+                        .WithMany()
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Filmoteka.Server.Models.Sala", "Sala")
+                        .WithMany("Projekcije")
+                        .HasForeignKey("SalaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Film");
+
+                    b.Navigation("Sala");
+                });
+
+            modelBuilder.Entity("Filmoteka.Server.Models.Rezervacija", b =>
+                {
+                    b.HasOne("Filmoteka.Server.Models.Projekcija", "Projekcija")
+                        .WithMany("Rezervacije")
+                        .HasForeignKey("ProjekcijaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Projekcija");
+                });
+
+            modelBuilder.Entity("Filmoteka.Server.Models.Projekcija", b =>
+                {
+                    b.Navigation("Rezervacije");
+                });
+
+            modelBuilder.Entity("Filmoteka.Server.Models.Sala", b =>
+                {
+                    b.Navigation("Projekcije");
                 });
 
             modelBuilder.Entity("Filmoteka.Server.Models.Zanr", b =>

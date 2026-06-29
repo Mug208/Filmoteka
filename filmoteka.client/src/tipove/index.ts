@@ -1,3 +1,4 @@
+
 export interface Zanr {
     id: string;
     naziv: string;
@@ -26,7 +27,6 @@ export interface Film {
     naziv: string;
     godina: number;
     opis?: string | null;
-    dostupnoUBioskopu: boolean;
     zanr?: Zanr | null;
     reziseri: Reziser[];
 }
@@ -35,7 +35,6 @@ export interface CreateFilm {
     naziv: string;
     godina: number;
     opis?: string | null;
-    dostupnoUBioskopu: boolean;
     zanrId: string;
     reziseriIds: string[];
 }
@@ -47,3 +46,53 @@ export interface PagedResult<T> {
     pageSize: number;
     totalPages: number;
 }
+
+export type TipSale = 'Standard' | 'ThreeD' | 'IMAX';
+
+export interface Sala {
+    id: string;
+    naziv: string;
+    kapacitet: number;
+    tip: string;
+    imaProjekcije: boolean;
+}
+
+export interface CreateSala {
+    naziv: string;
+    kapacitet: number;
+    tip: string;
+}
+
+export interface Projekcija {
+    id: string;
+    film?: Film | null;
+    sala?: Sala | null;
+    vremePocetka: string;
+    vremeZavrsetka: string;
+    dostupnaMesta: number;
+    ukupnoMesta: number;
+}
+
+export interface CreateProjekcija {
+    filmId: string;
+    salaId: string;
+    vremePocetka: string;
+    vremeZavrsetka: string;
+}
+
+export interface Rezervacija {
+    id: string;
+    projekcijaId: string;
+    korisnikIme: string;
+    korisnikEmail: string;
+    datumRezervacije: string;
+    projekcija?: Projekcija | null;
+}
+
+export interface CreateRezervacija {
+    projekcijaId: string;
+    korisnikIme: string;
+    korisnikEmail: string;
+}
+
+export type Uloga = 'Admin' | 'Zaposleni' | 'Korisnik';

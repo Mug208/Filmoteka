@@ -11,6 +11,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IFilmService, FilmService>();
 builder.Services.AddScoped<IReziserService, ReziserService>();
 builder.Services.AddScoped<IZanrService, ZanrService>();
+builder.Services.AddScoped<ISalaService, SalaService>();
+builder.Services.AddScoped<IRezervacijaService, RezervacijaService>();
+builder.Services.AddScoped<IProjekcijaService, ProjekcijaService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

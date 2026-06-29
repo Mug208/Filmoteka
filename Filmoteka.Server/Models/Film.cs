@@ -12,7 +12,7 @@ namespace Filmoteka.Server.Models
         [Required(ErrorMessage = "Naziv filma je obavezan.")]
         [StringLength(100, ErrorMessage = "Naziv filma ne može biti duži od 100 karaktera.")]
         [Column("NazivFilma")]
-        public string Naziv { get; set; }
+        public string Naziv { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Godina filma je obavezna.")]
         [Range(1900, 2100, ErrorMessage = "Godina filma mora biti između 1900. i 2100.")]
