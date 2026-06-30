@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { projekcijaApi } from '../api/client';
 import type { Projekcija } from '../tipove';
+import { useRole } from '../componente/UlogaContext';
 
 function formatDatum(iso: string): string {
     const d = new Date(iso);
@@ -15,6 +16,7 @@ export default function ProjekcijaList() {
     const [projekcije, setProjekcije] = useState<Projekcija[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { isAdmin } = useRole();
 
     const loadProjekcije = async () => {
         try {
@@ -51,7 +53,7 @@ export default function ProjekcijaList() {
     return (
         <div>
             <h2>Projekcije</h2>
-            <Link to="/projekcije/novi" style={addBtnStyle}>+ Zakaži projekciju</Link>
+            {isAdmin && <Link to="/projekcije/novi" style={addBtnStyle}>+ Zakaži projekciju</Link>}
 
             {projekcije.length === 0 ? (
                 <p style={{ marginTop: '1rem' }}>Nema zakazanih projekcija.</p>
@@ -88,8 +90,8 @@ export default function ProjekcijaList() {
                                     {p.dostupnaMesta > 0 && (
                                         <Link to={`/rezervisi/${p.id}`} style={editLink}>Rezerviši</Link>
                                     )}
-                                    {' | '}
-                                    <button onClick={() => handleDelete(p.id)} style={deleteBtn}>Obriši</button>
+                                    {isAdmin && ' | '}
+                                    {isAdmin && <button onClick={() => handleDelete(p.id)} style={deleteBtn}>Obriši</button> }
                                 </td>
                             </tr>
                         ))}

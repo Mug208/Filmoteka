@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { filmApi, zanrApi } from '../api/client';
 import type { Film, PagedResult, Zanr } from '../tipove';
 import Pagination from '../componente/Paginacija';
+import { useRole } from '../componente/UlogaContext';
 
 export default function FilmList() {
     const [data, setData] = useState<PagedResult<Film> | null>(null);
@@ -13,6 +14,7 @@ export default function FilmList() {
     const [dostupnoUBioskopu, setDostupnoUBioskopu] = useState(false);
     const [zanrovi, setZanrovi] = useState<Zanr[]>([]);
     const [loading, setLoading] = useState(true);
+    const { isAdmin } = useRole();
 
     const changePage = (nextPage: number) => {
         setPage(Math.max(1, nextPage));
@@ -124,7 +126,7 @@ export default function FilmList() {
             {!data || !data.items || data.items.length === 0 ? (
                 <div>
                     <p>Nema registrovanih filmova.</p>
-                    <Link to="/filmovi/novi" style={addLink}>+ Dodaj prvi film</Link>
+                    {isAdmin && <Link to="/filmovi/novi" style={addLink}>+ Dodaj prvi film</Link>}
                 </div>
             ) : (
                 <>
@@ -136,7 +138,7 @@ export default function FilmList() {
                                 <th style={thStyle}>Žanr</th>
                                 <th style={thStyle}>Režiseri</th>
                                 <th style={thStyle}>Dostupno</th>
-                                <th style={thStyle}>Akcije</th>
+                                    {isAdmin && <th style={thStyle}>Akcije</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -154,11 +156,11 @@ export default function FilmList() {
                                     </td>
                                     <td style={tdStyle}>{film.dostupnoUBioskopu ? 'Da' : 'Ne'}</td>
                                     <td style={tdStyle}>
-                                        <Link to={`/filmovi/${film.id}/izmeni`} style={editLink}>Izmeni</Link>
-                                        {' | '}
-                                        <button onClick={() => handleDelete(film.id, film.naziv)} style={deleteBtn}>
+                                        {isAdmin && <Link to={`/filmovi/${film.id}/izmeni`} style={editLink}>Izmeni</Link>}
+                                        {isAdmin && ' | '}
+                                        {isAdmin && <button onClick={() => handleDelete(film.id, film.naziv)} style={deleteBtn}>
                                             Obriši
-                                        </button>
+                                        </button>}
                                     </td>
                                 </tr>
                             ))}

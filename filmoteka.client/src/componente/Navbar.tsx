@@ -15,8 +15,8 @@ export default function Navbar() {
 
                     <div style={linksStyle}>
                         <Link to="/" style={linkStyle}>Filmovi</Link>
-                        <Link to="/zanrovi" style={linkStyle}>Žanrovi</Link>
-                        <Link to="/reziseri" style={linkStyle}>Režiseri</Link>
+                        {isAdmin && <Link to="/zanrovi" style={linkStyle}>Žanrovi</Link>}
+                        {isAdmin && <Link to="/reziseri" style={linkStyle}>Režiseri</Link>}
                         {isAdmin && <Link to="/sale" style={linkStyle}>Sale</Link>}
                         {(isAdmin || isZaposleni) && <Link to="/projekcije" style={linkStyle}>Projekcije</Link>}
                         {isKorisnik && <Link to="/projekcije" style={linkStyle}>Projekcije</Link>}
