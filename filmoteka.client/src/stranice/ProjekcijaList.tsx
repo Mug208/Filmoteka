@@ -16,7 +16,7 @@ export default function ProjekcijaList() {
     const [projekcije, setProjekcije] = useState<Projekcija[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { isAdmin } = useRole();
+    const { isAdmin, isZaposleni } = useRole();
 
     const loadProjekcije = async () => {
         try {
@@ -54,7 +54,7 @@ export default function ProjekcijaList() {
         <div>
             <h2>Projekcije</h2>
             {isAdmin && <Link to="/projekcije/novi" style={addBtnStyle}>+ Zakaži projekciju</Link>}
-
+            {isZaposleni && <Link to="/projekcije/novi" style={addBtnStyle}>+ Zakaži projekciju</Link>}
             {projekcije.length === 0 ? (
                 <p style={{ marginTop: '1rem' }}>Nema zakazanih projekcija.</p>
             ) : (

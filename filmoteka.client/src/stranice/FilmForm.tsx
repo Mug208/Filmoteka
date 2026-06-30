@@ -127,6 +127,18 @@ export default function FilmForm() {
                     <textarea value={opis} onChange={(e) => setOpis(e.target.value)} rows={3} style={inputStyle} />
                 </div>
 
+                <div style={{ ...formGroup, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                        id="dostupnoUBioskopu"
+                        type="checkbox"
+                        checked={dostupnoUBioskopu}
+                        onChange={(e) => setDostupnoUBioskopu(e.target.checked)}
+                    />
+                    <label htmlFor="dostupnoUBioskopu" style={{ fontWeight: '600', color: '#475569' }}>
+                        Dostupno u bioskopima
+                    </label>
+                </div>
+
                 <div style={formGroup}>
                     <label style={labelStyle}>Žanr *</label>
                     <select value={zanrId} onChange={(e) => setZanrId(e.target.value)} required style={inputStyle}>

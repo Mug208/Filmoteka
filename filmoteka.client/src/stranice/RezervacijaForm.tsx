@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEventHandler } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projekcijaApi, rezervacijaApi } from '../api/client';
+import { useRole } from '../componente/UlogaContext';
 import type { Projekcija, Rezervacija } from '../tipove';
 
 function formatDatum(iso: string): string {
@@ -16,11 +17,16 @@ export default function RezervacijaForm() {
     const [error, setError] = useState<string | null>(null);
     const [uspeh, setUspeh] = useState<string | null>(null);
 
+    const { currentUser, isAuthenticated } = useRole();
     const [ime, setIme] = useState('');
     const [email, setEmail] = useState('');
 
     useEffect(() => {
         if (!id) return;
+        if (currentUser) {
+            setIme(currentUser.fullName);
+            setEmail(currentUser.email);
+        }
         let isMounted = true;
         Promise.all([
             projekcijaApi.getById(id),
@@ -45,8 +51,13 @@ export default function RezervacijaForm() {
         try {
             await rezervacijaApi.create({ projekcijaId: id, korisnikIme: ime.trim(), korisnikEmail: email.trim() });
             setUspeh('Uspešno ste rezervisali mesto!');
-            setIme('');
-            setEmail('');
+            if (currentUser) {
+                setIme(currentUser.fullName);
+                setEmail(currentUser.email);
+            } else {
+                setIme('');
+                setEmail('');
+            }
             const [p, r] = await Promise.all([
                 projekcijaApi.getById(id),
                 rezervacijaApi.getByProjekcija(id),
@@ -62,6 +73,24 @@ export default function RezervacijaForm() {
             setError(msg);
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleCancel = async (reservationId: string) => {
+        if (!window.confirm('Da li želite da otkažete rezervaciju?')) return;
+        try {
+            await rezervacijaApi.remove(reservationId);
+            const [p, r] = await Promise.all([
+                projekcijaApi.getById(id!),
+                rezervacijaApi.getByProjekcija(id!),
+            ]);
+            setProjekcija(p);
+            setPostojece(r);
+            setUspeh('Rezervacija je otkazana.');
+        } catch (err: unknown) {
+            let msg = 'Greška pri otkazivanju rezervacije';
+            if (err instanceof Error) msg = err.message;
+            setError(msg);
         }
     };
 
@@ -95,20 +124,26 @@ export default function RezervacijaForm() {
                 </div>
             ) : (
                 <form onSubmit={handleSubmit} style={{ maxWidth: '500px', marginTop: '1rem' }}>
-                    <h3>Unesite podatke</h3>
+                    <h3>{isAuthenticated ? 'Rezerviši svoje mesto' : 'Unesite podatke'}</h3>
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                     {uspeh && <p style={{ color: '#16a34a' }}>{uspeh}</p>}
 
-                    <div style={formGroup}>
-                        <label style={labelStyle}>Ime i prezime *</label>
-                        <input type="text" value={ime} onChange={(e) => setIme(e.target.value)} required style={inputStyle} />
-                    </div>
+                    {isAuthenticated ? (
+                        <p style={{ color: '#64748b' }}>Prijavljeni ste kao {currentUser?.fullName}. Ne morate ponovo unositi email.</p>
+                    ) : (
+                        <>
+                            <div style={formGroup}>
+                                <label style={labelStyle}>Ime i prezime *</label>
+                                <input type="text" value={ime} onChange={(e) => setIme(e.target.value)} required style={inputStyle} />
+                            </div>
 
-                    <div style={formGroup}>
-                        <label style={labelStyle}>Email *</label>
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={inputStyle} />
-                        <small style={{ color: '#64748b' }}>Jedan email može rezervisati samo jedno mesto po projekciji.</small>
-                    </div>
+                            <div style={formGroup}>
+                                <label style={labelStyle}>Email *</label>
+                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={inputStyle} />
+                                <small style={{ color: '#64748b' }}>Jedan email može rezervisati samo jedno mesto po projekciji.</small>
+                            </div>
+                        </>
+                    )}
 
                     <div style={{ marginTop: '1rem' }}>
                         <button type="submit" disabled={saving} style={saveBtn}>
@@ -129,6 +164,12 @@ export default function RezervacijaForm() {
                                 {r.korisnikIme} <small style={{ color: '#64748b' }}>({r.korisnikEmail})</small>
                                 {' — '}
                                 {formatDatum(r.datumRezervacije)}
+                                {isAuthenticated && currentUser && r.korisnikEmail === currentUser.email && (
+                                    <>
+                                        {' '}
+                                        <button type="button" onClick={() => handleCancel(r.id)} style={cancelBtn}>Otkaži rezervaciju</button>
+                                    </>
+                                )}
                             </li>
                         ))}
                     </ul>
@@ -146,3 +187,4 @@ const labelStyle: React.CSSProperties = { display: 'block', marginBottom: '0.3re
 const inputStyle: React.CSSProperties = { width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '4px', boxSizing: 'border-box' };
 const saveBtn: React.CSSProperties = { background: '#3b82f6', color: 'white', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer' };
 const backBtn: React.CSSProperties = { color: '#475569', textDecoration: 'none', padding: '0.5rem 1rem' };
+const cancelBtn: React.CSSProperties = { marginLeft: '0.5rem', background: '#ef4444', color: 'white', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '4px', cursor: 'pointer' };

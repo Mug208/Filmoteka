@@ -29,6 +29,7 @@ export interface Film {
     opis?: string | null;
     zanr?: Zanr | null;
     reziseri: Reziser[];
+    dostupnoUBioskopu: boolean;
 }
 
 export interface CreateFilm {
@@ -37,6 +38,7 @@ export interface CreateFilm {
     opis?: string | null;
     zanrId: string;
     reziseriIds: string[];
+    dostupnoUBioskopu: boolean;
 }
 
 export interface PagedResult<T> {
@@ -96,3 +98,12 @@ export interface CreateRezervacija {
 }
 
 export type Uloga = 'Admin' | 'Zaposleni' | 'Korisnik';
+
+export interface User {
+    id: string;
+    fullName: string;
+    email: string;
+    username: string;
+    password: string;
+    role: Uloga;
+}

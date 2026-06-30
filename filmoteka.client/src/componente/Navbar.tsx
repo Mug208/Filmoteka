@@ -1,11 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useRole } from './UlogaContext';
-import type { Uloga } from '../tipove';
-
-const ULOGE: Uloga[] = ['Admin', 'Zaposleni', 'Korisnik'];
 
 export default function Navbar() {
-    const { uloga, setUloga, isAdmin, isZaposleni, isKorisnik } = useRole();
+    const { uloga, isAdmin, isZaposleni, isKorisnik, isAuthenticated, logout } = useRole();
 
     return (
         <nav style={navStyle}>
@@ -18,6 +15,7 @@ export default function Navbar() {
                         {isAdmin && <Link to="/zanrovi" style={linkStyle}>Žanrovi</Link>}
                         {isAdmin && <Link to="/reziseri" style={linkStyle}>Režiseri</Link>}
                         {isAdmin && <Link to="/sale" style={linkStyle}>Sale</Link>}
+                        {isAdmin && <Link to="/korisnici" style={linkStyle}>Korisnici</Link>}
                         {(isAdmin || isZaposleni) && <Link to="/projekcije" style={linkStyle}>Projekcije</Link>}
                         {isKorisnik && <Link to="/projekcije" style={linkStyle}>Projekcije</Link>}
                         {(isAdmin || isZaposleni) && <Link to="/filmovi/novi" style={addBtnStyle}>+ Dodaj film</Link>}
@@ -25,14 +23,17 @@ export default function Navbar() {
                 </div>
 
                 <div style={roleBoxStyle}>
-                    <label style={{ fontSize: '0.8rem', color: '#94a3b8', marginRight: '0.4rem' }}>Uloga:</label>
-                    <select
-                        value={uloga}
-                        onChange={(e) => setUloga(e.target.value as Uloga)}
-                        style={roleSelectStyle}
-                    >
-                        {ULOGE.map((u) => <option key={u} value={u}>{u}</option>)}
-                    </select>
+                    {isAuthenticated ? (
+                        <>
+                            <span style={{ color: '#cbd5e1', fontSize: '0.9rem', marginRight: '0.75rem' }}>{uloga}</span>
+                            <button onClick={logout} style={logoutBtnStyle}>Odjavi se</button>
+                        </>
+                    ) : (
+                        <>
+                            
+                            <Link to="/login" style={loginBtnStyle}>Prijavi se</Link>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>
@@ -62,7 +63,11 @@ const addBtnStyle: React.CSSProperties = {
 const roleBoxStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center',
 };
-const roleSelectStyle: React.CSSProperties = {
-    padding: '0.3rem 0.5rem', borderRadius: '4px', border: '1px solid #475569',
-    background: '#334155', color: 'white', fontSize: '0.85rem',
+const loginBtnStyle: React.CSSProperties = {
+    marginLeft: '0.6rem', color: 'white', textDecoration: 'none', background: '#2563eb',
+    padding: '0.35rem 0.7rem', borderRadius: '4px', fontSize: '0.85rem',
+};
+const logoutBtnStyle: React.CSSProperties = {
+    background: '#ef4444', color: 'white', border: 'none', padding: '0.35rem 0.7rem',
+    borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem',
 };
