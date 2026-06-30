@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { filmApi } from '../api/client';
 import type { Film } from '../tipove';
+import { useRole } from '../componente/UlogaContext'
 
 export default function FilmDetails() {
     const { id } = useParams<{ id: string }>();
     const [film, setFilm] = useState<Film | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { isAdmin } = useRole();
 
     useEffect(() => {
         if (!id) return;
@@ -73,8 +75,8 @@ export default function FilmDetails() {
             </dl>
 
             <div style={{ marginTop: '1.5rem' }}>
-                <Link to={`/filmovi/${film.id}/izmeni`} style={editBtn}>Izmeni</Link>
-                {' '}
+                {isAdmin && <Link to={`/filmovi/${film.id}/izmeni`} style={editBtn}>Izmeni</Link>}
+                {isAdmin && ' '}
                 <Link to="/" style={backBtn}>Nazad na listu</Link>
             </div>
         </div>
