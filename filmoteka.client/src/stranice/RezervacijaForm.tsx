@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEventHandler } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projekcijaApi, rezervacijaApi } from '../api/client';
 import { useRole } from '../componente/UlogaContext';
@@ -18,15 +18,12 @@ export default function RezervacijaForm() {
     const [uspeh, setUspeh] = useState<string | null>(null);
 
     const { currentUser, isAuthenticated } = useRole();
-    const [ime, setIme] = useState('');
-    const [email, setEmail] = useState('');
+    const [ime, setIme] = useState(() => currentUser?.fullName ?? '');
+    const [email, setEmail] = useState(() => currentUser?.email ?? '');
 
     useEffect(() => {
         if (!id) return;
-        if (currentUser) {
-            setIme(currentUser.fullName);
-            setEmail(currentUser.email);
-        }
+
         let isMounted = true;
         Promise.all([
             projekcijaApi.getById(id),
@@ -42,7 +39,7 @@ export default function RezervacijaForm() {
         return () => { isMounted = false; };
     }, [id]);
 
-    const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!id || !ime.trim() || !email.trim()) return;
         setSaving(true);

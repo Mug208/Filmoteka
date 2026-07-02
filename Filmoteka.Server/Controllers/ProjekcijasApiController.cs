@@ -51,5 +51,13 @@ namespace Filmoteka.Server.Controllers
             if (!success) return NotFound();
             return NoContent();
         }
+
+        [HttpPost("{id:guid}/otkazi")]
+        public async Task<IActionResult> Otkazi(Guid id)
+        {
+            var success = await _projekcijaService.OtkaziAsync(id);
+            if (!success) return NotFound();
+            return NoContent();
+        }
     }
 }

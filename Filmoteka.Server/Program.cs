@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Filmoteka.Server.Data;
 using Filmoteka.Server.Services;
+using Filmoteka.Server.Services.Email;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddScoped<IZanrService, ZanrService>();
 builder.Services.AddScoped<ISalaService, SalaService>();
 builder.Services.AddScoped<IRezervacijaService, RezervacijaService>();
 builder.Services.AddScoped<IProjekcijaService, ProjekcijaService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

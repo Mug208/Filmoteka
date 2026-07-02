@@ -29,5 +29,8 @@ namespace Filmoteka.Server.Models
 
         [Column("DatumRezervacije")]
         public DateTime DatumRezervacije { get; set; } = DateTime.UtcNow;
+
+        [Column("PodsetnikPoslat")]
+        public bool PodsetnikPoslat { get; set; } = false;
     }
 }

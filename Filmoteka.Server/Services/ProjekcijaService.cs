@@ -1,6 +1,7 @@
 ﻿using Filmoteka.Server.Data;
 using Filmoteka.Server.DTOs;
 using Filmoteka.Server.Models;
+using Filmoteka.Server.Services.Email;
 using Microsoft.EntityFrameworkCore;
 
 namespace Filmoteka.Server.Services
@@ -12,15 +13,18 @@ namespace Filmoteka.Server.Services
         Task<ProjekcijaDto?> DobiOdIdAsync(Guid id);
         Task<ProjekcijaDto> DodajAsync(NapraviProjekcijaDto dto);
         Task<(bool Success, string? Error)> ObrisiAsync(Guid id);
+        Task<bool> OtkaziAsync(Guid id);
     }
 
     public class ProjekcijaService : IProjekcijaService
     {
         private readonly AppDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public ProjekcijaService(AppDbContext context)
+        public ProjekcijaService(AppDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public async Task<IEnumerable<ProjekcijaDto>> DobiSveAsync()
@@ -129,6 +133,31 @@ namespace Filmoteka.Server.Services
                 DostupnaMesta = p.DostupnaMesta,
                 UkupnoMesta = s?.Kapacitet ?? 0
             };
+        }
+
+        public async Task<bool> OtkaziAsync(Guid id)
+        {
+            var projekcija = await _context.Projekcije
+                .Include(p => p.Film)
+                .Include(p => p.Rezervacije)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (projekcija == null) return false;
+
+            projekcija.Status = StatusProjekcije.Otkazana;
+
+            foreach (var rezervacija in projekcija.Rezervacije)
+            {
+                await _emailService.PosaljiOtkazivanjeAsync(
+                    rezervacija.KorisnikEmail,
+                    rezervacija.KorisnikIme,
+                    projekcija.Film.Naziv,
+                    projekcija.VremePocetka
+                );
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 

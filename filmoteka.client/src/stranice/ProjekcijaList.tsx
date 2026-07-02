@@ -20,30 +20,49 @@ export default function ProjekcijaList() {
 
     const loadProjekcije = async () => {
         try {
+            setLoading(true);
             const p = await projekcijaApi.getAll();
             setProjekcije(p);
             setError(null);
-        } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Greška pri učitavanju projekcija');
+        } catch (err) {
+            if (err instanceof Error) setError(err.message);
+            else setError('Greška pri učitavanju projekcija');
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         let isMounted = true;
-        projekcijaApi.getAll()
-            .then((p) => { if (isMounted) { setProjekcije(p); setError(null); } })
-            .catch((err: unknown) => { if (isMounted) setError(err instanceof Error ? err.message : 'Greška pri učitavanju projekcija'); })
-            .finally(() => { if (isMounted) setLoading(false); });
+
+        const fetchData = async () => {
+            try {
+                const p = await projekcijaApi.getAll();
+                if (isMounted) {
+                    setProjekcije(p);
+                    setError(null);
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setError(err instanceof Error ? err.message : 'Greška pri učitavanju projekcija');
+                }
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        fetchData();
+
         return () => { isMounted = false; };
     }, []);
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm('Obrisati projekciju?')) return;
+    const handleCancel = async (id: string) => {
+        if (!window.confirm('Otkaži projekciju? Svi korisnici sa rezervacijom će dobiti email obaveštenje.')) return;
         try {
-            await projekcijaApi.remove(id);
+            await projekcijaApi.cancel(id);
             await loadProjekcije();
-        } catch (err: unknown) {
-            alert(err instanceof Error ? err.message : 'Greška pri brisanju projekcije');
+        } catch (err) {
+            alert(err instanceof Error ? err.message : 'Greška pri otkazivanju projekcije');
         }
     };
 
@@ -53,8 +72,8 @@ export default function ProjekcijaList() {
     return (
         <div>
             <h2>Projekcije</h2>
-            {isAdmin && <Link to="/projekcije/novi" style={addBtnStyle}>+ Zakaži projekciju</Link>}
-            {isZaposleni && <Link to="/projekcije/novi" style={addBtnStyle}>+ Zakaži projekciju</Link>}
+            {(isAdmin || isZaposleni) && <Link to="/projekcije/novi" style={addBtnStyle}>+ Zakaži projekciju</Link>}
+
             {projekcije.length === 0 ? (
                 <p style={{ marginTop: '1rem' }}>Nema zakazanih projekcija.</p>
             ) : (
@@ -66,12 +85,13 @@ export default function ProjekcijaList() {
                             <th style={thStyle}>Početak</th>
                             <th style={thStyle}>Kraj</th>
                             <th style={thStyle}>Slobodna mesta</th>
+                            <th style={thStyle}>Status</th>
                             <th style={thStyle}>Akcije</th>
                         </tr>
                     </thead>
                     <tbody>
                         {projekcije.map((p) => (
-                            <tr key={p.id}>
+                            <tr key={p.id} style={{ background: p.status === 'Otkazana' ? '#fef2f2' : 'transparent' }}>
                                 <td style={tdStyle}>{p.film?.naziv ?? '—'}</td>
                                 <td style={tdStyle}>
                                     {p.sala?.naziv ?? '—'}
@@ -87,11 +107,26 @@ export default function ProjekcijaList() {
                                     {p.ukupnoMesta}
                                 </td>
                                 <td style={tdStyle}>
-                                    {p.dostupnaMesta > 0 && (
-                                        <Link to={`/rezervisi/${p.id}`} style={editLink}>Rezerviši</Link>
+                                    {p.status === 'Otkazana' ? (
+                                        <span style={{ color: '#dc2626', fontWeight: 'bold' }}>Otkazana</span>
+                                    ) : (
+                                        <span style={{ color: '#16a34a' }}>Aktivna</span>
                                     )}
-                                    {isAdmin && ' | '}
-                                    {isAdmin && <button onClick={() => handleDelete(p.id)} style={deleteBtn}>Obriši</button> }
+                                </td>
+                                <td style={tdStyle}>
+                                    {p.status !== 'Otkazana' && (
+                                        <>
+                                            {p.dostupnaMesta > 0 && (
+                                                <Link to={`/rezervisi/${p.id}`} style={editLink}>Rezerviši</Link>
+                                            )}
+                                            {isAdmin && (
+                                                <>
+                                                    {p.dostupnaMesta > 0 && ' | '}
+                                                    <button onClick={() => handleCancel(p.id)} style={cancelBtn}>Otkaži</button>
+                                                </>
+                                            )}
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))}
@@ -109,6 +144,5 @@ const addBtnStyle: React.CSSProperties = {
 const tableStyle: React.CSSProperties = { width: '100%', borderCollapse: 'collapse', marginTop: '1rem' };
 const thStyle: React.CSSProperties = { textAlign: 'left', padding: '0.6rem', background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' };
 const tdStyle: React.CSSProperties = { padding: '0.6rem', borderBottom: '1px solid #e2e8f0' };
-const editLink: React.CSSProperties = { color: '#3b82f6', textDecoration: 'none' };
-const deleteBtn: React.CSSProperties = { background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', padding: 0 };
-
+const editLink: React.CSSProperties = { color: '#3b82f6', textDecoration: 'none', marginRight: '0.5rem' };
+const cancelBtn: React.CSSProperties = { background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', padding: 0, fontWeight: 'bold' };

@@ -73,6 +73,7 @@ export interface Projekcija {
     vremeZavrsetka: string;
     dostupnaMesta: number;
     ukupnoMesta: number;
+    status: 'Aktivna' | 'Otkazana';
 }
 
 export interface CreateProjekcija {
@@ -106,4 +107,5 @@ export interface User {
     username: string;
     password: string;
     role: Uloga;
+    status?: 'NaCekanju' | 'Odobren';
 }

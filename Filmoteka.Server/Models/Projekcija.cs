@@ -1,9 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
 namespace Filmoteka.Server.Models
 {
+    public enum StatusProjekcije
+    {
+        Aktivna,
+        Otkazana
+    }
+
     [Table("Projekcije")]
     public class Projekcija
     {
@@ -15,7 +20,7 @@ namespace Filmoteka.Server.Models
         public Guid FilmId { get; set; }
 
         [ForeignKey("FilmId")]
-        public Film? Film {  get; set; }
+        public Film? Film { get; set; }
 
         [Required]
         [Column("SalaId")]
@@ -35,6 +40,10 @@ namespace Filmoteka.Server.Models
         [Required]
         [Column("DostupnaMesta")]
         public int DostupnaMesta { get; set; }
+
+        [Required]
+        [Column("Status")]
+        public StatusProjekcije Status { get; set; } = StatusProjekcije.Aktivna;
 
         public List<Rezervacija> Rezervacije { get; set; } = new List<Rezervacija>();
     }

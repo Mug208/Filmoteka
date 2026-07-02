@@ -13,6 +13,7 @@ import type {
     CreateProjekcija,
     Rezervacija,
     CreateRezervacija,
+    User,
 } from '../tipove';
 
 const api = axios.create({
@@ -135,6 +136,20 @@ export const projekcijaApi = {
     remove: async (id: string): Promise<void> => {
         await api.delete(`/projekcijas/${id}`);
     },
+    cancel: async (id: string) => {
+        const res = await fetch(`/api/projekcijas/${id}/otkazi`, { method: 'POST' });
+        if (!res.ok) throw new Error('Greška pri otkazivanju projekcije');
+    },
+};
+
+export const korisnikApi = {
+    approve: async (user: User): Promise<void> => {
+        const res = await fetch(`/api/korisnici/odobri/${user.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error('Greška pri odobravanju korisnika');
+    }
 };
 
 export const rezervacijaApi = {

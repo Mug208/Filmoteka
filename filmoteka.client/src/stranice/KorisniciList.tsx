@@ -1,25 +1,13 @@
 import { useMemo, useState } from 'react';
 import { useRole } from '../componente/UlogaContext';
+import { korisnikApi } from '../api/client'; 
 import type { Uloga, User } from '../tipove';
 
-const STORAGE_KEY = 'filmoteka_users';
-const ROLE_OPTIONS: Uloga[] = ['Admin', 'Zaposleni', 'Korisnik'];
-
-function readUsers(): User[] {
-    if (typeof window === 'undefined') return [];
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? (JSON.parse(raw) as User[]) : [];
-    } catch {
-        return [];
-    }
-}
-
-function saveUsers(users: User[]) {
-    if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-    }
-}
+import { readUsers, saveUsers, ROLE_OPTIONS } from '../utils/userStorage';
+import { 
+    tableStyle, thStyle, tdStyle, inputStyle, 
+    saveBtn, approveBtn, deleteBtn, secondarytext 
+} from './KorisniciList.styles';
 
 export default function UsersList() {
     const { currentUser } = useRole();
@@ -29,9 +17,7 @@ export default function UsersList() {
     const sortedUsers = useMemo(() => [...users].sort((a, b) => a.fullName.localeCompare(b.fullName)), [users]);
 
     const updateUser = (id: string, field: keyof User, value: string) => {
-        if (field === 'role' && currentUser?.id === id) {
-            return;
-        }
+        if (field === 'role' && currentUser?.id === id) return;
         setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, [field]: value } : u)));
     };
 
@@ -56,6 +42,18 @@ export default function UsersList() {
         setMessage('Korisnik je obrisan.');
     };
 
+    const handleApprove = async (user: User) => {
+        try {
+            await korisnikApi.approve(user);
+            const nextUsers = users.map(u => u.id === user.id ? { ...u, status: 'Odobren' as const } : u);
+            saveUsers(nextUsers);
+            setUsers(nextUsers);
+            setMessage('Korisnik je odobren. Email poslat!');
+        } catch {
+                alert('Greška pri slanju zahteva za odobrenje.');
+            }
+    };
+
     return (
         <div>
             <h2>Upravljanje korisnicima</h2>
@@ -71,6 +69,7 @@ export default function UsersList() {
                             <th style={thStyle}>Korisničko ime</th>
                             <th style={thStyle}>Lozinka</th>
                             <th style={thStyle}>Uloga</th>
+                            <th style={thStyle}>Status</th>
                             <th style={thStyle}>Akcije</th>
                         </tr>
                     </thead>
@@ -91,6 +90,19 @@ export default function UsersList() {
                                     )}
                                 </td>
                                 <td style={tdStyle}>
+                                    {user.status === 'Odobren' ? (
+                                        <span style={{ color: '#16a34a' }}>Odobren</span>
+                                    ) : (
+                                        <span style={{ color: '#d97706', fontWeight: 'bold' }}>Na čekanju</span>
+                                    )}
+                                </td>
+                                <td style={tdStyle}>
+                                    {user.status !== 'Odobren' && (
+                                        <>
+                                            <button type="button" onClick={() => handleApprove(user)} style={approveBtn}>Odobri</button>
+                                            {' | '}
+                                        </>
+                                    )}
                                     <button type="button" onClick={() => saveUser(user)} style={saveBtn}>Sačuvaj</button>
                                     {' '}
                                     <button type="button" onClick={() => deleteUser(user.id)} style={deleteBtn}>Obriši</button>
@@ -102,6 +114,7 @@ export default function UsersList() {
             </div>
         </div>
     );
+<<<<<<< Updated upstream
 }
 
 const tableStyle: React.CSSProperties = { width: '100%', borderCollapse: 'collapse' };
@@ -110,3 +123,6 @@ const tdStyle: React.CSSProperties = { padding: '0.4rem', borderBottom: '1px sol
 const inputStyle: React.CSSProperties = { width: '100%', padding: '0.4rem 0.5rem', border: '1px solid #cbd5e1', borderRadius: '4px', boxSizing: 'border-box' };
 const saveBtn: React.CSSProperties = { background: '#2563eb', color: 'white', border: 'none', padding: '0.35rem 0.6rem', borderRadius: '4px', cursor: 'pointer' };
 const deleteBtn: React.CSSProperties = { background: '#ef4444', color: 'white', border: 'none', padding: '0.35rem 0.6rem', borderRadius: '4px', cursor: 'pointer' };
+=======
+}
+>>>>>>> Stashed changes

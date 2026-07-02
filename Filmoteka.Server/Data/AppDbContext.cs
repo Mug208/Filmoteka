@@ -15,6 +15,7 @@ namespace Filmoteka.Server.Data
         public DbSet<Sala> Sale { get; set; }
         public DbSet<Projekcija> Projekcije { get; set; }
         public DbSet<Rezervacija> Rezervacije { get; set; }
+        public DbSet<Korisnik> Korisnici { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
