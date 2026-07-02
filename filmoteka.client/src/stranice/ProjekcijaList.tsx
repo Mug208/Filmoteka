@@ -107,7 +107,7 @@ const addBtnStyle: React.CSSProperties = {
     padding: '0.4rem 0.8rem', borderRadius: '4px', textDecoration: 'none'
 };
 const tableStyle: React.CSSProperties = { width: '100%', borderCollapse: 'collapse', marginTop: '1rem' };
-const thStyle: React.CSSProperties = { textAlign: 'left', padding: '0.6rem', background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' };
+const thStyle: React.CSSProperties = { textAlign: 'center', padding: '0.6rem', background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' };
 const tdStyle: React.CSSProperties = { padding: '0.6rem', borderBottom: '1px solid #e2e8f0' };
 const editLink: React.CSSProperties = { color: '#3b82f6', textDecoration: 'none' };
 const deleteBtn: React.CSSProperties = { background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', padding: 0 };

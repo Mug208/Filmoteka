@@ -197,7 +197,7 @@ const clearBtn: React.CSSProperties = {
     padding: '0.5rem 0.75rem', background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: 'pointer'
 };
 const tableStyle: React.CSSProperties = { width: '100%', borderCollapse: 'collapse', marginTop: '1rem' };
-const thStyle: React.CSSProperties = { textAlign: 'left', padding: '0.6rem', background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' };
+const thStyle: React.CSSProperties = { textAlign: 'center', padding: '0.6rem', background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' };
 const tdStyle: React.CSSProperties = { padding: '0.6rem', borderBottom: '1px solid #e2e8f0' };
 const linkStyle: React.CSSProperties = { color: '#3b82f6', textDecoration: 'none' };
 const editLink: React.CSSProperties = { color: '#3b82f6', textDecoration: 'none' };

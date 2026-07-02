@@ -9,7 +9,6 @@ export default function SalaList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // forma
     const [naziv, setNaziv] = useState('');
     const [kapacitet, setKapacitet] = useState<number>(50);
     const [tip, setTip] = useState('Standard');
@@ -143,7 +142,7 @@ const formStyle: React.CSSProperties = { display: 'flex', gap: '0.5rem', marginB
 const inputStyle: React.CSSProperties = { padding: '0.4rem', border: '1px solid #cbd5e1', borderRadius: '4px' };
 const btnStyle: React.CSSProperties = { background: '#3b82f6', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer' };
 const tableStyle: React.CSSProperties = { width: '100%', borderCollapse: 'collapse', marginTop: '1rem' };
-const thStyle: React.CSSProperties = { textAlign: 'left', padding: '0.6rem', background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' };
+const thStyle: React.CSSProperties = { textAlign: 'center', padding: '0.6rem', background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' };
 const tdStyle: React.CSSProperties = { padding: '0.6rem', borderBottom: '1px solid #e2e8f0' };
 const deleteBtn: React.CSSProperties = { background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', padding: 0 };
 const disabledBtn: React.CSSProperties = { background: 'none', border: 'none', color: '#94a3b8', cursor: 'not-allowed', padding: 0 };

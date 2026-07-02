@@ -91,5 +91,5 @@ const editBtn: React.CSSProperties = {
     padding: '0.4rem 0.8rem', borderRadius: '4px', textDecoration: 'none',
 };
 const backBtn: React.CSSProperties = {
-    display: 'inline-block', padding: '0.4rem 0.8rem', textDecoration: 'none', color: '#475569',
+    display: 'inline-block', padding: '0.4rem 0.8rem', textDecoration: 'none', color: '#475569', border: '1px solid #cbd5e1', borderRadius: '4px',
 };
